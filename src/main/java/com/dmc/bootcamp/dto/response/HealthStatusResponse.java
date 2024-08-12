@@ -7,11 +7,12 @@ import java.time.LocalDateTime;
 
 @Getter
 public class HealthStatusResponse {
-    private  float highBlood;
-    private float lowBlood;
-    private float emptySugar;
-    private float fullSugar;
+    private  Float highBlood;
+    private Float lowBlood;
+    private Float emptySugar;
+    private Float fullSugar;
     private String userId;
+    private Float weigh;
     private LocalDateTime date;
     private long statusId;
 
@@ -23,5 +24,6 @@ public class HealthStatusResponse {
         this.fullSugar=healthStatus.getFullSugar();
         this.userId=healthStatus.getAppUser().getUserId();
         this.date=healthStatus.getStatusTime();
+        this.weigh=healthStatus.getWeigh();
     }
 }

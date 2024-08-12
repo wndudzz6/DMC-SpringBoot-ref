@@ -10,7 +10,7 @@ public class UserResponse {
     private String userId;
     private String password;
     private String userName;
-    private Character gender;
+    private String gender;
     private LocalDate birthday;
     private String diseaseInfo;
     private Double height;

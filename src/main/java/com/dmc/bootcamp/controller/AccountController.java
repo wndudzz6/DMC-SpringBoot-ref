@@ -141,10 +141,10 @@ public class AccountController {
             AppUser appUser= userRepository.findByUserId(loginDto.getUserId());
             String jwtToken= createJwtToken(appUser);
 
-            var response= new HashMap<String,Object>();
+           var response= new HashMap<String,Object>();
             response.put("jwtToken",jwtToken);
-            response.put("user",appUser);
-            return ResponseEntity.ok(response);
+           // response.put("user",appUser);
+            return ResponseEntity.ok().body(response);
         }
         catch (Exception ex){
             System.out.println("there is an exception: ");

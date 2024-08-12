@@ -3,10 +3,7 @@ package com.dmc.bootcamp.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+@Setter
 @Entity
 @Table(name = "health_status")
 public class HealthStatus {
@@ -30,24 +28,28 @@ public class HealthStatus {
     private LocalDateTime statusTime;
 
     @Column(name = "high_blood")
-    private float highBlood;
+    private Float highBlood;
 
     @Column(name = "low_blood")
-    private float lowBlood;
+    private Float lowBlood;
 
     @Column(name = "empty_sugar")
-    private float emptySugar;
+    private Float emptySugar;
 
     @Column(name = "full_sugar")
-    private float fullSugar;
+    private Float fullSugar;
+
+    @Column(name = "weigh")
+    private Float weigh;
 
     @Builder
-    public HealthStatus(float highBlood,float lowBlood,float emptySugar,float fullSugar,AppUser user){
+    public HealthStatus(float highBlood,float lowBlood,float emptySugar,float fullSugar,AppUser user,Float weigh){
         this.highBlood=highBlood;
         this.lowBlood=lowBlood;
         this.emptySugar=emptySugar;
         this.fullSugar=fullSugar;
         this.appUser=user;
+        this.weigh=weigh;
     }
 
     @PrePersist
@@ -55,7 +57,7 @@ public class HealthStatus {
         this.statusTime = LocalDateTime.now();
     }
 
-    public void update(float highBlood,float lowBlood,float emptySugar,float fullSugar){
+    public void update(Float highBlood,Float lowBlood,Float emptySugar,Float fullSugar){
         this.highBlood=highBlood;
         this.lowBlood=lowBlood;
         this.emptySugar=emptySugar;

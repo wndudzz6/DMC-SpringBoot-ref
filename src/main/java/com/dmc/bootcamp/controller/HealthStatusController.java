@@ -18,47 +18,60 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-
+@RequestMapping("/healthStatus")
 public class HealthStatusController {
 
     private final HealthStatusService healthStatusService;
     private final UserService userService;
 
-    @PostMapping("/addHealthStastus")// 건강 기록 추
-    public ResponseEntity<HealthStatus> addStatus(@RequestBody HealthStatusRequest request){
-        HealthStatus addHealthStatus= healthStatusService.save(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(addHealthStatus);
-    }
-
-    @GetMapping("/getHealthStatus")// 건강 기록  모두 조회
-    public ResponseEntity<List<HealthStatusResponse>> getAll(){
-        List<HealthStatusResponse> lists= healthStatusService.getAll().stream().map(HealthStatusResponse::new).toList();
-        return ResponseEntity.ok().body(lists);
-
-    }
-    
-    @GetMapping("/getHealthStatusByUserId")// 유저 Id에 따라 간강관리 상태를 다 건내기
-    public ResponseEntity<List<HealthStatusResponse>> getAllHealthStatus(){
+    @PostMapping // Create new health status
+    public ResponseEntity<HealthStatus> createHealthStatus(@RequestBody HealthStatusRequest request) {
         JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = auth.getName(); // 인증된 사용자의 ID
-        AppUser user = userService.findById(userId);
 
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        AppUser user = userService.findById(userId);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        List<HealthStatusResponse> lists= healthStatusService.getALlStatusByUserId(userId).stream().map(HealthStatusResponse::new).toList();
-        return ResponseEntity.ok().body(lists);
+
+
+        HealthStatus healthStatus = healthStatusService.saveOrUpdate(userId,request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(healthStatus);
     }
 
-    @DeleteMapping("/deleteHealthStatus/{id}") // 건강 기록를 삭제
-    public ResponseEntity<Void> deleteHealthStatus(@PathVariable Long id){
+    @GetMapping // Get all health statuses
+    public ResponseEntity<List<HealthStatusResponse>> getAllHealthStatuses() {
+        List<HealthStatusResponse> healthStatusResponses = healthStatusService.getAll().stream()
+                .map(HealthStatusResponse::new)
+                .toList();
+        return ResponseEntity.ok(healthStatusResponses);
+    }
+
+    @GetMapping("/user") // Get health statuses by user ID
+    public ResponseEntity<List<HealthStatusResponse>> getHealthStatusByUserId() {
+        JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth.getName(); // 인증된 사용자의 ID
+
+        AppUser user = userService.findById(userId);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<HealthStatusResponse> healthStatusResponses = healthStatusService.getAllStatusByUserId(userId).stream()
+                .map(HealthStatusResponse::new)
+                .toList();
+        return ResponseEntity.ok().body(healthStatusResponses);
+    }
+
+    @DeleteMapping("/{id}") // Delete health status
+    public ResponseEntity<Void> deleteHealthStatus(@PathVariable Long id) {
         healthStatusService.delete(id);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/putHealthStatus/{id}") // 건강 기록 수정
-    public ResponseEntity<HealthStatus> updateHealthStatus(@PathVariable long id, @RequestBody UpdateHealthStatusRequest request){
-        HealthStatus updateHealthStatus= healthStatusService.update(id,request);
-        return ResponseEntity.ok().body(updateHealthStatus);
+    @PutMapping("/{id}") // Update health status
+    public ResponseEntity<HealthStatus> updateHealthStatus(@PathVariable long id, @RequestBody UpdateHealthStatusRequest request) {
+        HealthStatus updatedHealthStatus = healthStatusService.update(id, request);
+        return ResponseEntity.ok(updatedHealthStatus);
     }
 }

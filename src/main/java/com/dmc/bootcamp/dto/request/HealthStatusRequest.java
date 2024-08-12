@@ -12,11 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HealthStatusRequest {
 
-    private  float highBlood;
-    private float lowBlood;
-    private float emptySugar;
-    private float fullSugar;
-    private String userId;
+    private  Float highBlood;
+    private Float lowBlood;
+    private Float emptySugar;
+    private Float fullSugar;
+ //   private String userId;
+    private Float weigh;
 
     public HealthStatus toEntity(AppUser user){
         return HealthStatus.builder()
@@ -24,6 +25,7 @@ public class HealthStatusRequest {
                 .lowBlood(lowBlood)
                 .emptySugar(emptySugar)
                 .fullSugar(fullSugar)
+                .weigh(weigh)
                 .user(user)
                 .build();
 

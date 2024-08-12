@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class UpdateHealthStatusRequest {
-    private  float highBlood;
-    private float lowBlood;
-    private float emptySugar;
-    private float fullSugar;
+    private  Float highBlood;
+    private Float lowBlood;
+    private Float emptySugar;
+    private Float fullSugar;
+    private Float weigh;
 }

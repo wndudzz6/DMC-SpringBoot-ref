@@ -25,7 +25,7 @@ public class AppUser {
     private String userName;
 
     @Column(name = "gender")
-    private Character gender;
+    private String gender;
 
     @Column(name = "birthday")
     private LocalDate birthday;

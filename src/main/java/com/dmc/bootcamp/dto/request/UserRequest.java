@@ -19,7 +19,7 @@ public class UserRequest {
     @NotEmpty
     private String userName;
 
-    private Character gender;
+    private String gender;
 
     private LocalDate birthday;
 

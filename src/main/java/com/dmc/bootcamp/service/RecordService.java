@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -24,12 +27,25 @@ public class RecordService {
     private final UserRepository userRepository;
 
 
-    public Record saveRecord(String userId,RecordRequest recordRequest){
-        AppUser user= userRepository.findUserByUserId(userId);
+    // 사용자 ID와 날짜를 기반으로 특정 날짜의 기록을 조회하는 메서드
+    public List<Record> getRecordsByDate(String userId, LocalDate date) {
+        AppUser user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // LocalDate의 시작과 끝을 LocalDateTime으로 변환
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+        // 날짜 범위를 사용하여 Record를 검색
+        return recordRepository.findByAppUserAndRecordDate(user, startOfDay, endOfDay);
+    }
+
+    public Record saveRecord(String userId, RecordRequest recordRequest) {
+        AppUser user = userRepository.findUserByUserId(userId);
         if (user == null) {
             throw new IllegalArgumentException("User not found");
         }
-        return recordRepository.save(recordRequest.toEntity(user));
+        Record record = recordRequest.toEntity(user);
+        return recordRepository.save(record);
     }
 
     @Transactional

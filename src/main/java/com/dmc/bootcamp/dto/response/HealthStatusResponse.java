@@ -3,6 +3,7 @@ package com.dmc.bootcamp.dto.response;
 import com.dmc.bootcamp.domain.HealthStatus;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,7 +14,7 @@ public class HealthStatusResponse {
     private Float fullSugar;
     private String userId;
     private Float weigh;
-    private LocalDateTime date;
+    private LocalDate date;
     private long statusId;
 
     public HealthStatusResponse(HealthStatus healthStatus){

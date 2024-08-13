@@ -47,7 +47,7 @@ public class HealthStatusService {
     @Transactional
     public HealthStatus update(long id, UpdateHealthStatusRequest request){
         HealthStatus healthStatus= healthStatusRepository.findById(id).orElseThrow(()->new IllegalArgumentException("not found: "+id));
-        healthStatus.update(request.getHighBlood(), request.getLowBlood(), request.getEmptySugar(), request.getFullSugar());
+        healthStatus.update(request.getHighBlood(), request.getLowBlood(), request.getEmptySugar(), request.getFullSugar(),request.getDate());
         return healthStatus;
     }
 
@@ -55,10 +55,9 @@ public class HealthStatusService {
     @Transactional
     public HealthStatus saveOrUpdate(String userId, HealthStatusRequest request) {
         AppUser user = userRepository.findUserByUserId(userId);
-        LocalDate today = LocalDate.now();
 
         // 하루 유저는 건강 상태 기록했는지 안는지
-        HealthStatus existingHealthStatus = healthStatusRepository.findByUserAndDate(userId,today);
+        HealthStatus existingHealthStatus = healthStatusRepository.findByUserAndDate(userId,request.getDate());
 
         if (existingHealthStatus != null) {
             // 기준 기록 있으면 업데이트

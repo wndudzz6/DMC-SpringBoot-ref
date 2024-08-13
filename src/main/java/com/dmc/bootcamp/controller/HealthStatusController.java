@@ -24,19 +24,22 @@ public class HealthStatusController {
     private final HealthStatusService healthStatusService;
     private final UserService userService;
 
-    @PostMapping // Create new health status
-    public ResponseEntity<HealthStatus> createHealthStatus(@RequestBody HealthStatusRequest request) {
-        JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String userId = auth.getName(); // 인증된 사용자의 ID
+    @PostMapping("/saveOrUpdate") // Create new health status
+    public ResponseEntity<?> createOrUpdateHealthStatus(@RequestBody HealthStatusRequest request) {
+        try {
+            JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+            String userId = auth.getName(); // 인증된 사용자의 ID
 
-        AppUser user = userService.findById(userId);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            AppUser user = userService.findById(userId);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+
+            HealthStatus healthStatus = healthStatusService.saveOrUpdate(userId, request);
+            return ResponseEntity.status(HttpStatus.OK).body(healthStatus);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating health status: " + e.getMessage());
         }
-
-
-        HealthStatus healthStatus = healthStatusService.saveOrUpdate(userId,request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(healthStatus);
     }
 
     @GetMapping // Get all health statuses

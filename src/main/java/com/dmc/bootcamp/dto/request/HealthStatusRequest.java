@@ -7,17 +7,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class HealthStatusRequest {
 
-    private  Float highBlood;
+    private Float highBlood;
     private Float lowBlood;
     private Float emptySugar;
     private Float fullSugar;
  //   private String userId;
     private Float weigh;
+    private LocalDate date;
 
     public HealthStatus toEntity(AppUser user){
         return HealthStatus.builder()
@@ -26,6 +29,7 @@ public class HealthStatusRequest {
                 .emptySugar(emptySugar)
                 .fullSugar(fullSugar)
                 .weigh(weigh)
+                .date(date)
                 .user(user)
                 .build();
 

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,7 +26,7 @@ public class HealthStatus {
     private AppUser appUser;
 
     @Column(name = "status_time")
-    private LocalDateTime statusTime;
+    private LocalDate statusTime;
 
     @Column(name = "high_blood")
     private Float highBlood;
@@ -43,24 +44,26 @@ public class HealthStatus {
     private Float weigh;
 
     @Builder
-    public HealthStatus(float highBlood,float lowBlood,float emptySugar,float fullSugar,AppUser user,Float weigh){
+    public HealthStatus(Float highBlood,Float lowBlood,Float emptySugar,Float fullSugar,AppUser user,Float weigh,LocalDate date){
         this.highBlood=highBlood;
         this.lowBlood=lowBlood;
         this.emptySugar=emptySugar;
         this.fullSugar=fullSugar;
         this.appUser=user;
         this.weigh=weigh;
+        this.statusTime=date;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.statusTime = LocalDateTime.now();
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        this.statusTime = LocalDateTime.now();
+//    }
 
-    public void update(Float highBlood,Float lowBlood,Float emptySugar,Float fullSugar){
+    public void update(Float highBlood, Float lowBlood, Float emptySugar, Float fullSugar, LocalDate date){
         this.highBlood=highBlood;
         this.lowBlood=lowBlood;
         this.emptySugar=emptySugar;
         this.fullSugar=fullSugar;
+        this.statusTime=date;
     }
 }

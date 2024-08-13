@@ -37,6 +37,10 @@ public class RecommendLog {
     @JsonBackReference
     private AppUser appUser;
 
+
+    @Column(name = "like_status")
+    private boolean likeStatus;
+
     public RecommendLog(){};
 
     @PrePersist
@@ -45,8 +49,10 @@ public class RecommendLog {
     }
 
     @Builder
-    public RecommendLog( List<Food> foods,AppUser appUser) {
+    public RecommendLog( List<Food> foods,AppUser appUser, boolean likeStatus, Long recommendId) {
         this.foods=foods;
         this.appUser=appUser;
+        this.likeStatus=likeStatus;
+        this.recommendId=recommendId;
     }
 }

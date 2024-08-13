@@ -12,11 +12,13 @@ import java.util.List;
 public class RecommendLogRequest {
     private List<Food> foods;
     private AppUser appUser;
+    private Long recommendId;
 
     public RecommendLog toEntity(){
         return RecommendLog.builder()
                 .foods(foods)
                 .appUser(appUser)
+                .recommendId(recommendId)
                 .build();
     }
 }

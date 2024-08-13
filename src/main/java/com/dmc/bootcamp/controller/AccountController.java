@@ -3,24 +3,29 @@ package com.dmc.bootcamp.controller;
 import com.dmc.bootcamp.domain.AppUser;
 import com.dmc.bootcamp.dto.request.UserLoginRequest;
 import com.dmc.bootcamp.dto.request.UserRequest;
+import com.dmc.bootcamp.dto.response.UserResponse;
 import com.dmc.bootcamp.repository.TokenBlacklistRepository;
 import com.dmc.bootcamp.repository.UserRepository;
+import com.dmc.bootcamp.service.UserService;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -45,19 +50,30 @@ public class AccountController {
     private final AuthenticationManager authenticationManager;
 
     private final TokenBlacklistRepository tokenBlacklistRepository;
+    private final UserService userService;
 
 
     //유저 정보 가저오기
     @GetMapping("/profile")
     public ResponseEntity<Object> getProfile(Authentication authentication) {
-        var response= new HashMap<String, Object>();
-        response.put("username", authentication.getName());
-        response.put("authorities", authentication.getAuthorities());
+//        var response= new HashMap<String, Object>();
+//        response.put("username", authentication.getName());
+//        response.put("authorities", authentication.getAuthorities());
+//
+//        var appUser = userRepository.findUserByUserId(authentication.getName());
+//        response.put("user", appUser);
 
-        var appUser = userRepository.findUserByUserId(authentication.getName());
-        response.put("user", appUser);
+        JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String userId = auth.getName(); // 인증된 사용자의 ID
 
-        return ResponseEntity.ok(response);
+        AppUser user = userService.findById(userId);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        AppUser appUser1= userRepository.findUserByUserId(userId);
+        UserResponse userResponse= new UserResponse(appUser1);
+
+        return ResponseEntity.ok().body(userResponse);
     }
 
 

@@ -3,6 +3,8 @@ package com.dmc.bootcamp.controller;
 import com.dmc.bootcamp.domain.AppUser;
 import com.dmc.bootcamp.domain.Food;
 
+import com.dmc.bootcamp.domain.RecommendLog;
+import com.dmc.bootcamp.dto.request.LikeRequest;
 import com.dmc.bootcamp.dto.response.FoodResponse;
 import com.dmc.bootcamp.dto.response.RecommendCountFood;
 import com.dmc.bootcamp.service.FoodService;
@@ -10,17 +12,14 @@ import com.dmc.bootcamp.service.RecommendLogService;
 import com.dmc.bootcamp.service.UserService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.GetMapping;
-
-
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.HashMap;
@@ -33,6 +32,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FoodController {
     private final FoodService foodService;
+    private final UserService userService;
+    private final RecommendLogService recommendLogService;
 
     @GetMapping("/food")
     public ResponseEntity<List<Food>> getListFood(){
@@ -40,43 +41,43 @@ public class FoodController {
         return ResponseEntity.ok().body(list);
     }
 
-    private final UserService userService;
-    private final RecommendLogService recommendLogService;
+    //호불호 컨트롤러
+    @PostMapping("/api/like-meal/{recommendId}")
+    public ResponseEntity<String> likeMeal(@PathVariable Long recommendId, @RequestBody LikeRequest likeRequest) {
+        if (likeRequest.getRecommendId() == null || !likeRequest.getRecommendId().equals(recommendId)) {
+            return ResponseEntity.badRequest().body("Invalid recommend ID in request.");
+        }
+
+        boolean result = recommendLogService.updateLikeStatus(recommendId, likeRequest.isLike());
+        if (result) {
+            return ResponseEntity.ok("Like status updated successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("Failed to update like status.");
+        }
+    }
+
+
     @GetMapping("/recommend-meal")
     public ResponseEntity<RecommendCountFood> recommendMeal() {
-
         JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String userId = auth.getName(); // 인증된 사용자의 ID
-        AppUser user= userService.findById(userId);
-
+        String userId = auth.getName();
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         List<FoodResponse> list = foodService.getMeal(userId).stream().map(FoodResponse::new).toList();
-
         List<Food> recommendedFoods = foodService.getMeal(userId);
 
+        RecommendLog recommendLog = recommendLogService.saveRecommendationLog(userId, recommendedFoods);
+        Long recommendId = recommendLog.getRecommendId();  // 추천 식단 ID 취득
 
-        //총합 kcal,sodium,sugar
+        RecommendCountFood recommendCountFood = new RecommendCountFood(list, recommendId);  // 수정된 생성자 호출
 
-        float kcal= 0;
-        float sodium= 0;
-        float sugar=0;
-        for(Food food : recommendedFoods) {
-            kcal+= food.getCalories();
-            sodium+= food.getSodium();
-            sugar+= food.getSugar();
-        }
-        Map<String,Float> map = new HashMap<>();
-        map.put("kcal",kcal);
-        map.put("sodium",sodium);
-        map.put("sugar",sugar);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
-        recommendLogService.saveRecommendationLog(userId, recommendedFoods);
-        RecommendCountFood recommendCountFood= new RecommendCountFood(list);
-
-        return ResponseEntity.ok().body(recommendCountFood);
+        return ResponseEntity.ok().headers(headers).body(recommendCountFood);
     }
+
 
     @GetMapping("/recommend/{recommendId}")
     public ResponseEntity<List<Food>> getFoodsByRecommendId(@PathVariable Long recommendId) {

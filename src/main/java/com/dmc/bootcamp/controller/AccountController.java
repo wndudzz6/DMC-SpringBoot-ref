@@ -56,12 +56,6 @@ public class AccountController {
     //유저 정보 가저오기
     @GetMapping("/profile")
     public ResponseEntity<Object> getProfile(Authentication authentication) {
-//        var response= new HashMap<String, Object>();
-//        response.put("username", authentication.getName());
-//        response.put("authorities", authentication.getAuthorities());
-//
-//        var appUser = userRepository.findUserByUserId(authentication.getName());
-//        response.put("user", appUser);
 
         JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = auth.getName(); // 인증된 사용자의 ID
@@ -114,10 +108,6 @@ public class AccountController {
                 return ResponseEntity.badRequest().body("Username already used");
             }
 
-//            otherUser= userRepository.find(registerDto.getEmail());
-//            if(otherUser!=null){
-//                return ResponseEntity.badRequest().body("Email already used");
-//            }
             userRepository.save(appUser);
 
             String jwtToken= createJwtToken(appUser);

@@ -1,6 +1,5 @@
 package com.dmc.bootcamp.controller;
 
-import com.dmc.bootcamp.domain.AppUser;
 import com.dmc.bootcamp.domain.Food;
 
 import com.dmc.bootcamp.domain.RecommendLog;
@@ -8,7 +7,7 @@ import com.dmc.bootcamp.dto.request.LikeRequest;
 import com.dmc.bootcamp.dto.response.FoodResponse;
 import com.dmc.bootcamp.dto.response.RecommendCountFood;
 import com.dmc.bootcamp.service.FoodService;
-import com.dmc.bootcamp.service.RecommendLogService;
+import com.dmc.bootcamp.service.recommend.RecommendLogService;
 import com.dmc.bootcamp.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -22,9 +21,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 //쿼리추가
 

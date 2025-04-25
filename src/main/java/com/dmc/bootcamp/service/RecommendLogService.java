@@ -2,6 +2,7 @@ package com.dmc.bootcamp.service;
 
 import com.dmc.bootcamp.domain.AppUser;
 import com.dmc.bootcamp.domain.Food;
+import com.dmc.bootcamp.domain.RecomFood;
 import com.dmc.bootcamp.domain.RecommendLog;
 import com.dmc.bootcamp.dto.response.FoodResponse;
 import com.dmc.bootcamp.dto.response.RecommendCountFood;
@@ -45,13 +46,24 @@ public class RecommendLogService {
         RecommendLog recommendLog = new RecommendLog();
         recommendLog.setRecomTime(LocalDateTime.now());
         recommendLog.setAppUser(user);
-        recommendLog.setFoods(foods);
+        recommendLog.setLikeStatus(false);
 
-        return recommendLogRepository.save(recommendLog);  // RecommendLog 객체 반환
+        RecommendLog savedRecommendLog = recommendLogRepository.save(recommendLog);
+        List<RecomFood> recomFoods = foods.stream()
+                .map(food -> {
+                    RecomFood recomFood = new RecomFood();
+                    recomFood.setRecommendLog(savedRecommendLog);
+                    recomFood.setFood(food);
+                    return recomFood;
+                })
+                .collect(Collectors.toList());
+
+        recomFoodRepository.saveAll(recomFoods);
+
+        return savedRecommendLog;
     }
 
-
-    //호불호 조사
+        //호불호 조사
     public boolean updateLikeStatus(Long recommendId, boolean like) {
         Optional<RecommendLog> logOptional = recommendLogRepository.findById(recommendId);
         if (logOptional.isPresent()) {

@@ -20,7 +20,7 @@ public class HealthStatus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long statusId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     @JsonBackReference
     private AppUser appUser;

@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface RecomFoodRepository extends JpaRepository<RecomFood, Long> {
 
-    @Query("SELECT f FROM Food f WHERE f.foodId IN (SELECT rf.foodId FROM RecomFood rf WHERE rf.recommendId = :recommendId)")
+    @Query("SELECT rf.food FROM RecomFood rf " +
+            "WHERE rf.recommendLog.recommendId = :recommendId")
     List<Food> findFoodsByRecommendId(@Param("recommendId") Long recommendId);
 }

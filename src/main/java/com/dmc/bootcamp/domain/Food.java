@@ -40,8 +40,5 @@ public class Food{
     @Column(name = "sugar")
     private float sugar;
 
-    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "foods")
-    private List<RecommendLog> recommendLogs;
-
 
 }

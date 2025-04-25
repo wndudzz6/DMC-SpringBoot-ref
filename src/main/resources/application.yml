@@ -1,9 +1,9 @@
 server.port : 8081
 spring:
   datasource:
-    url : jdbc:mysql://localhost:3306/dmc
+    url : jdbc:mysql://localhost:3306/dmcc
     username: root
-    password: 1234
+    password: 8689
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

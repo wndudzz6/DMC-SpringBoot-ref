@@ -10,19 +10,27 @@ public class RecomFood {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "recommend_id")
-    private Long recommendId;
+    /*
+    지연로딩 옵션 추가, 쓸데없는 컬럼 제거, JPA를 끄는 옵션 제거
 
-    @Column(name = "food_id")
-    private String foodId;
+    엔티티로 승격 / 객체로 교체
+    * */
 
-    @ManyToOne
-    @JoinColumn(name = "recommend_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recommend_id")
     private RecommendLog recommendLog;
 
-    @ManyToOne
-    @JoinColumn(name = "food_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "food_id")
     private Food food;
 
-    // getters and setters
+    public void setRecommendLog(RecommendLog recommendLog) {
+        this.recommendLog = recommendLog;
+    }
+
+    public void setFood(Food food) {
+        this.food = food;
+    }
+
+
 }

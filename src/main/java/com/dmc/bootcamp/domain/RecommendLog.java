@@ -1,5 +1,6 @@
 package com.dmc.bootcamp.domain;
 
+import com.dmc.bootcamp.repository.RecomFoodRepository;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -23,16 +24,11 @@ public class RecommendLog {
     @Column(name = "recom_time")
     private LocalDateTime recomTime;
 
-    @ManyToMany
-    @JoinTable(
-            name = "recom_food",
-            joinColumns = @JoinColumn(name = "recommend_id"),
-            inverseJoinColumns = @JoinColumn(name = "food_id")
-    )
-    @JsonIgnore // 이 어노테이션으로 인해 foods 필드는 직렬화되지 않음
-    private List<Food> foods;
+    @OneToMany(mappedBy = "recommendLog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RecomFood> recomFoods;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+
+    @ManyToOne(fetch = FetchType.LAZY) //@XtoOne 형태 지연로딩으로 변경
     @JoinColumn(name = "userId")
     @JsonBackReference
     private AppUser appUser;
@@ -50,7 +46,6 @@ public class RecommendLog {
 
     @Builder
     public RecommendLog( List<Food> foods,AppUser appUser, boolean likeStatus, Long recommendId) {
-        this.foods=foods;
         this.appUser=appUser;
         this.likeStatus=likeStatus;
         this.recommendId=recommendId;

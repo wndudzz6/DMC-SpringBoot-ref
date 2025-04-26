@@ -10,3 +10,12 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL8Dialect
     open-in-view: false
+    security:
+      jwt:
+        secret-key: your-super-secret-key
+# application.yml
+logging:
+  level:
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG
+
+

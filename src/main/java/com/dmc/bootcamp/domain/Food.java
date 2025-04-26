@@ -3,7 +3,6 @@ package com.dmc.bootcamp.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

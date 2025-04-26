@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface RecommendLogRepository extends JpaRepository<RecommendLog,Long> {
-   //추천 로그 날짜 조회를 위한 리포지토리 메서드 추가
-   @Query("SELECT r FROM RecommendLog r WHERE DATE(r.recomTime) = :date")
+
+   @Query(value = "SELECT * FROM recommend_log r WHERE DATE(r.recom_time) = :date", nativeQuery = true)
    List<RecommendLog> findByDate(@Param("date") LocalDate date);
+
 }

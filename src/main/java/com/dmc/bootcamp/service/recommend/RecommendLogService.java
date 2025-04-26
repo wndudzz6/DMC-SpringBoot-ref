@@ -24,21 +24,12 @@ import java.util.stream.Collectors;
 @Service
 public class RecommendLogService {
 
-    RecommendLogRepository recommendLogRepository;
-    RecomFoodRepository recomFoodRepository;
-    RecommendationFactory recommendationFactory;
-
-
-
+    private final RecommendLogRepository recommendLogRepository;
+    private final RecomFoodRepository recomFoodRepository;
+    private final RecommendationFactory recommendationFactory;
     private final UserRepository userRepository;
 
-    @Autowired
-    public RecommendLogService(RecommendLogRepository recommendLogRepository,
-                               RecomFoodRepository recomFoodRepository, UserRepository userRepository) {
-        this.recommendLogRepository = recommendLogRepository;
-        this.recomFoodRepository = recomFoodRepository;
-        this.userRepository = userRepository;
-    }
+
 
     @Transactional
     public RecommendLog saveRecommendationLog(String userId, List<Food> foods) {

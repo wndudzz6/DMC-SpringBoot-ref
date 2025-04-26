@@ -4,6 +4,7 @@ import com.dmc.bootcamp.domain.AppUser;
 import com.dmc.bootcamp.domain.Food;
 import com.dmc.bootcamp.domain.RecomFood;
 import com.dmc.bootcamp.domain.RecommendLog;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,11 @@ import java.util.stream.Collectors;
 
 @Component
 public class RecommendationFactory {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("✅ RecommendationFactory 등록됨");
+    }
 
     public RecommendLog createLog(AppUser user) {
         RecommendLog log = new RecommendLog();

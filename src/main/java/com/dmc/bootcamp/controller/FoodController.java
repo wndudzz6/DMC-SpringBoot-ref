@@ -9,12 +9,15 @@ import com.dmc.bootcamp.dto.response.RecommendCountFood;
 import com.dmc.bootcamp.service.FoodService;
 import com.dmc.bootcamp.service.recommend.RecommendLogService;
 import com.dmc.bootcamp.service.UserService;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -31,6 +34,11 @@ public class FoodController {
     private final FoodService foodService;
     private final UserService userService;
     private final RecommendLogService recommendLogService;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("🚨 recommendLogService null? " + (recommendLogService == null));
+    }
 
     @GetMapping("/food")
     public ResponseEntity<List<Food>> getListFood(){
@@ -52,38 +60,33 @@ public class FoodController {
             return ResponseEntity.badRequest().body("Failed to update like status.");
         }
     }
-
-
-    @GetMapping("/recommend-meal")
-    public ResponseEntity<RecommendCountFood> recommendMeal() {
-        JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String userId = auth.getName();
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-        List<FoodResponse> list = foodService.getMeal(userId).stream().map(FoodResponse::new).toList();
-        List<Food> recommendedFoods = foodService.getMeal(userId);
-
-        RecommendLog recommendLog = recommendLogService.saveRecommendationLog(userId, recommendedFoods);
-        Long recommendId = recommendLog.getRecommendId();  // 추천 식단 ID 취득
-
-        RecommendCountFood recommendCountFood = new RecommendCountFood(list, recommendId);  // 수정된 생성자 호출
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-
-        return ResponseEntity.ok().headers(headers).body(recommendCountFood);
+    //Test
+    @GetMapping("/meal")
+    public ResponseEntity<String> recommendMeal(HttpServletRequest request, Authentication authentication) {
+        System.out.println("🔥 요청 URI: " + request.getRequestURI());
+        System.out.println("🔥 실제 recommendMeal 핸들러 도착!");
+        return ResponseEntity.ok("추천 OK!");
     }
 
 
-    @GetMapping("/recommend/{recommendId}")
-    public ResponseEntity<List<Food>> getFoodsByRecommendId(@PathVariable Long recommendId) {
-        List<Food> foods = foodService.getFoodsByRecommendId(recommendId);
-        if (foods.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(foods);
+
+
+
+
+//    @GetMapping("/recommend/{recommendId}")
+//    public ResponseEntity<List<Food>> getFoodsByRecommendId(@PathVariable Long recommendId) {
+//        List<Food> foods = foodService.getFoodsByRecommendId(recommendId);
+//        if (foods.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
+//        return ResponseEntity.ok(foods);
+//    }
+
+    @GetMapping("/ping")
+    public String ping() {
+        return "pong";
     }
+
     //자동완성
     @GetMapping("/api/foods/autocomplete")
     public List<String> autocomplete(@RequestParam String query) {
